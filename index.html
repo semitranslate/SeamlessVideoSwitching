@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无缝视频切换</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+                Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .wrapper {
+            display: flex;
+            align-items: flex-start;
+            /* 内部子项顶对齐 */
+            gap: 20px;
+        }
+
+
+        .info {
+            max-width: 320px;
+            text-align: left;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container {
+            width: 360px;
+            height: 640px;
+            position: relative;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #0ec9e1;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+
+        <div id="video-wrapper" class="video-container">
+            <!-- 页面上只需要这一个 video 标签 -->
+            <video id="combined-video" src="v3.webm" muted playsinline autoplay></video>
+        </div>
+
+        <div class="info">
+            <h2>无缝视频切换 (v1+v2=v3 方案)</h2>
+            <p>仅使用一个组合视频文件 (v3)，通过控制其播放区间来实现静态部分 (v1) 和动态部分 (v2) 之间的绝对无缝切换。</p>
+            <p><strong>操作说明：</strong>
+                <br>1. 准备一个名为 <code>v3.webm</code> 的视频文件 (即您的 v3)。
+                <br>2. 在下方的 JavaScript 代码中，将 <code>STATIC_DURATION</code> 的值设置为您的静态部分 (v1) 的准确时长（秒）。
+                <br>3. 鼠标未进入容器区域，视频的v1部分循环播放。
+                <br>3. 鼠标进入容器区域，视频从当前帧往后循环播放视频。
+            </p>
+        </div>
+
+
+    </div>
+
+    <script>
+        const videoWrapper = document.getElementById('video-wrapper');
+        const video = document.getElementById('combined-video');
+
+        // --- !!! 重要配置 !!! ---
+        // 请将此值设置为您的静态部分 (v1) 的准确时长（单位：秒）。
+        // 例如：如果 v1 部分是 1.5 秒长，则设置为 1.5。
+        const STATIC_DURATION = 2.8;
+
+        let isHovering = false;
+
+        // 确保视频已预加载
+        video.preload = 'auto';
+
+        // 监听视频播放时间的更新
+        video.addEventListener('timeupdate', () => {
+            // 如果鼠标当前不在视频区域，并且播放时间超出了静态部分的范围
+            if (!isHovering && video.currentTime >= STATIC_DURATION) {
+                // 就将视频跳回到开头，从而实现静态部分的无限循环
+                video.currentTime = 0;
+            }
+        });
+
+        // 鼠标进入容器区域
+        videoWrapper.addEventListener('mouseenter', () => {
+            isHovering = true;
+            // timeupdate 事件中的循环限制将解除，视频会从当前位置继续向后播放
+        });
+
+        // 鼠标离开容器区域
+        videoWrapper.addEventListener('mouseleave', () => {
+            isHovering = false;
+            // 鼠标离开后，立即将视频重置回静态部分的开头
+            // timeupdate 事件会接管，使其在静态部分循环
+            video.currentTime = 0;
+            video.play().catch(e => console.warn("重置播放失败:", e));
+        });
+
+        // 确保视频可以播放
+        video.addEventListener('canplaythrough', () => {
+            console.log("组合视频已准备就绪。");
+            video.play().catch(e => console.warn("自动播放失败:", e));
+        }, { once: true });
+
+    </script>
+</body>
+
+</html>
