@@ -1,7 +1,7 @@
 ## 视频无缝切换 Seamless video switching
 ### 作用描述
 用于在网页上无缝切换多个透明视频，不再出现闪烁或跳帧，背景也不会穿帮。
-Used for seamless switching between multiple transparent videos on a web page, with no more flickering, frame skipping, or background exposure issues.
+<br>Used for seamless switching between multiple transparent videos on a web page, with no more flickering, frame skipping, or background exposure issues.
 
 [Demo](https://semitranslate.github.io/SeamlessVideoSwitching/)
 
@@ -12,5 +12,3 @@ Used for seamless switching between multiple transparent videos on a web page, w
 2. 在下方的 JavaScript 代码中，将 <code>STATIC_DURATION</code> 的值设置为您的静态部分 (v1) 的准确时长（秒）。
 3. 鼠标未进入容器区域，视频的v1部分循环播放。
 4. 鼠标进入容器区域，视频从当前帧往后循环播放视频。
-
-### Demo
